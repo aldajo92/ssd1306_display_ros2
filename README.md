@@ -1,4 +1,4 @@
-# ROS2 OLED SSD1306 for Waver
+# ROS2 SSD1306 OLED
 
 ## Description
 
@@ -7,7 +7,7 @@ This ROS2 package made in C++ provides a way to drive an SSD1306 128x32 Oled dis
 ## Prerequisites
 - A RapsberryPI or Embedded sistem connected with an SSD1306 128X32 OLED display connected via I2C.
 - A ROS2 workspace set up and sourced.
-- This `waver_oled_ssd1306` package cloned into the `src` directory of your ROS2 workspace.
+- This `ros2_ssd1306_oled` package cloned into the `src` directory of your ROS2 workspace.
 
 
 ## Configuration
@@ -20,14 +20,14 @@ sudo apt install -y libi2c-dev iw
 
 ```
 cd <ros2_workspace>/src
-colcon build --packages-select waver_oled_ssd1306
+colcon build --packages-select ros2_ssd1306_oled
 ```
 
 ## Usage
 
 ```
 ## run in a first terminal
-ros2 run waver_oled_ssd1306 waver_oled_ssd1306_node
+ros2 run ros2_ssd1306_oled ros2_ssd1306_oled_node
 
 ## run in a second terminal
 ros2 topic pub /oled_text/first std_msgs/msg/String "{data: 'Hello Waver'}"

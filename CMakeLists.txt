@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(waver_oled_ssd1306)
+project(ros2_ssd1306_oled)
 
 # Use C++14
 set(CMAKE_CXX_STANDARD 14)
