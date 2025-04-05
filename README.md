@@ -15,5 +15,5 @@ colcon build --packages-select waver_oled_ssd1306
 
 ```
 ros2 run waver_oled_ssd1306 waver_oled_ssd1306_node
-ros2 topic pub /oled_text std_msgs/msg/String "{data: 'Hello, OLED!'}"
+ros2 topic pub /oled_text std_msgs/msg/String "{data: 'Hello Waver'}"
 ```

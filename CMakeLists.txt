@@ -45,19 +45,19 @@ install(DIRECTORY include/
 )
 
 # Add the executable
-add_executable(oled_display_node src/oled_display_node.cpp)
+add_executable(display_node src/display_node.cpp)
 
 # Include directories for the executable
-target_include_directories(oled_display_node PRIVATE
+target_include_directories(display_node PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ssd1306
 )
 
 # Link the executable with the library and dependencies
-target_link_libraries(oled_display_node oled_ssd1306)
-ament_target_dependencies(oled_display_node rclcpp std_msgs)
+target_link_libraries(display_node oled_ssd1306)
+ament_target_dependencies(display_node rclcpp std_msgs)
 
 # Install the executable
-install(TARGETS oled_display_node
+install(TARGETS display_node
     DESTINATION lib/${PROJECT_NAME})
 
 # Export the package
