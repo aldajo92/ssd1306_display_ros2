@@ -13,7 +13,11 @@ class OledDisplayNode : public rclcpp::Node
 {
 public:
     OledDisplayNode()
-        : Node("oled_display_node"), first_row_("IP..."), second_row_("Network.."), third_row_("...")
+        : Node("oled_display_node"), 
+        first_row_("IP..."), 
+        second_row_("Network.."), 
+        third_row_("..."),
+        four_row_("...")
     {
         // Initialize the OLED display
         try
@@ -30,9 +34,16 @@ public:
 
         // Create a subscription to the "oled_text" topic
         subscription_ = this->create_subscription<std_msgs::msg::String>(
-            "oled_text", 10,
+            "oled_text/first", 10,
             [this](const std_msgs::msg::String::SharedPtr msg) {
                 this->third_row_ = msg->data; // Update the message variable
+            });
+
+        // Create a subscription to the "oled_text" topic
+        subscription_ = this->create_subscription<std_msgs::msg::String>(
+            "oled_text/second", 10,
+            [this](const std_msgs::msg::String::SharedPtr msg) {
+                this->four_row_ = msg->data; // Update the message variable
             });
 
         // Timer to refresh the screen every 200 ms
@@ -61,6 +72,9 @@ private:
 
             // Display the message on the third row
             drawString8x8(SSD1306::OledPoint{0, 16}, third_row_.c_str(), SSD1306::PixelStyle::Set, *oled_);
+
+            // Display the message on the fourth row
+            drawString8x8(SSD1306::OledPoint{0, 24}, four_row_.c_str(), SSD1306::PixelStyle::Set, *oled_);
 
             oled_->displayUpdate();
         }
@@ -137,8 +151,9 @@ private:
     rclcpp::TimerBase::SharedPtr screen_timer_;
     rclcpp::TimerBase::SharedPtr ip_timer_;
     std::string first_row_;
-    std::string second_row_; // Added second_row_ for network name
+    std::string second_row_;
     std::string third_row_;
+    std::string four_row_;
 };
 
 int main(int argc, char **argv)
