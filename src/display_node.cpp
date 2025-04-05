@@ -13,7 +13,7 @@ class OledDisplayNode : public rclcpp::Node
 {
 public:
     OledDisplayNode()
-        : Node("oled_display_node"), ip_address_("Getting IP..."), message_("...")
+        : Node("oled_display_node"), first_row_("IP..."), second_row_("Network.."), third_row_("...")
     {
         // Initialize the OLED display
         try
@@ -32,7 +32,7 @@ public:
         subscription_ = this->create_subscription<std_msgs::msg::String>(
             "oled_text", 10,
             [this](const std_msgs::msg::String::SharedPtr msg) {
-                this->message_ = msg->data; // Update the message variable
+                this->third_row_ = msg->data; // Update the message variable
             });
 
         // Timer to refresh the screen every 200 ms
@@ -54,10 +54,13 @@ private:
             oled_->clear();
 
             // Display the IP address on the first row
-            drawString8x8(SSD1306::OledPoint{0, 0}, ip_address_.c_str(), SSD1306::PixelStyle::Set, *oled_);
+            drawString8x8(SSD1306::OledPoint{0, 0}, first_row_.c_str(), SSD1306::PixelStyle::Set, *oled_);
 
-            // Display the message on the second row
-            drawString8x8(SSD1306::OledPoint{0, 8}, message_.c_str(), SSD1306::PixelStyle::Set, *oled_);
+            // Display the Name address on the second row
+            drawString8x8(SSD1306::OledPoint{0, 8}, second_row_.c_str(), SSD1306::PixelStyle::Set, *oled_);
+
+            // Display the message on the third row
+            drawString8x8(SSD1306::OledPoint{0, 16}, third_row_.c_str(), SSD1306::PixelStyle::Set, *oled_);
 
             oled_->displayUpdate();
         }
@@ -75,6 +78,7 @@ private:
             getifaddrs(&ifAddrStruct);
 
             std::string new_ip = "No IP";
+            std::string network_name = "No Network";
 
             for (struct ifaddrs *ifa = ifAddrStruct; ifa != nullptr; ifa = ifa->ifa_next)
             {
@@ -84,9 +88,31 @@ private:
                     char addressBuffer[INET_ADDRSTRLEN];
                     inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
 
-                    if (strncmp(ifa->ifa_name, "eth", 3) == 0 || strncmp(ifa->ifa_name, "wlan", 4) == 0 || strncmp(ifa->ifa_name, "usb", 3) == 0)
+                    if (strncmp(ifa->ifa_name, "eth", 3) == 0)
                     {
                         new_ip = addressBuffer;
+                        network_name = "Ethernet";
+                        break;
+                    }
+                    else if (strncmp(ifa->ifa_name, "wlan", 4) == 0)
+                    {
+                        // Get the ESSID using the iw command
+                        std::string essid = "Unknown";
+                        std::string command = "iw dev " + std::string(ifa->ifa_name) + " link | grep SSID | awk '{print $2}'";
+                        FILE *fp = popen(command.c_str(), "r");
+                        if (fp)
+                        {
+                            char buffer[128];
+                            if (fgets(buffer, sizeof(buffer), fp) != nullptr)
+                            {
+                                essid = std::string(buffer);
+                                essid.erase(essid.find_last_not_of(" \n\r\t") + 1); // Trim whitespace
+                            }
+                            pclose(fp);
+                        }
+
+                        new_ip = addressBuffer;
+                        network_name = essid;
                         break;
                     }
                 }
@@ -97,7 +123,8 @@ private:
                 freeifaddrs(ifAddrStruct);
             }
 
-            ip_address_ = new_ip; // Update the IP address variable
+            first_row_ = new_ip;       // Update the IP address variable
+            second_row_ = network_name; // Update the network name variable
         }
         catch (const std::exception &e)
         {
@@ -109,8 +136,9 @@ private:
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
     rclcpp::TimerBase::SharedPtr screen_timer_;
     rclcpp::TimerBase::SharedPtr ip_timer_;
-    std::string ip_address_;
-    std::string message_;
+    std::string first_row_;
+    std::string second_row_; // Added second_row_ for network name
+    std::string third_row_;
 };
 
 int main(int argc, char **argv)
