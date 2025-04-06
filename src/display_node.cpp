@@ -108,14 +108,7 @@ private:
                     void *tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
                     char addressBuffer[INET_ADDRSTRLEN];
                     inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-
-                    if (strncmp(ifa->ifa_name, "eth", 3) == 0)
-                    {
-                        new_ip = addressBuffer;
-                        network_name = "Ethernet";
-                        break;
-                    }
-                    else if (strncmp(ifa->ifa_name, "wlan", 4) == 0)
+                    if (strncmp(ifa->ifa_name, "wlan", 4) == 0)
                     {
                         // Get the ESSID using the iw command
                         std::string essid = "Unknown";
@@ -134,6 +127,12 @@ private:
 
                         new_ip = addressBuffer;
                         network_name = essid;
+                        break;
+                    }
+                    else if (strncmp(ifa->ifa_name, "eth", 3) == 0)
+                    {
+                        new_ip = addressBuffer;
+                        network_name = "Ethernet";
                         break;
                     }
                 }
