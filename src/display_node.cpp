@@ -19,6 +19,14 @@ public:
         third_row_("..."),
         four_row_("...")
     {
+        // Declare parameters for topic names
+        this->declare_parameter<std::string>("topic_first", "oled_text/first");
+        this->declare_parameter<std::string>("topic_second", "oled_text/second");
+
+        // Get parameter values
+        std::string topic_first = this->get_parameter("topic_first").as_string();
+        std::string topic_second = this->get_parameter("topic_second").as_string();
+
         // Initialize the OLED display
         try
         {
@@ -32,16 +40,15 @@ public:
             rclcpp::shutdown();
         }
 
-        // Create a subscription to the "oled_text" topic
-        subscription_ = this->create_subscription<std_msgs::msg::String>(
-            "oled_text/first", 10,
+        // Create subscriptions using the configured topics
+        subscription_first_ = this->create_subscription<std_msgs::msg::String>(
+            topic_first, 10,
             [this](const std_msgs::msg::String::SharedPtr msg) {
                 this->third_row_ = msg->data; // Update the message variable
             });
 
-        // Create a subscription to the "oled_text" topic
-        subscription_ = this->create_subscription<std_msgs::msg::String>(
-            "oled_text/second", 10,
+        subscription_second_ = this->create_subscription<std_msgs::msg::String>(
+            topic_second, 10,
             [this](const std_msgs::msg::String::SharedPtr msg) {
                 this->four_row_ = msg->data; // Update the message variable
             });
@@ -154,6 +161,8 @@ private:
     std::string second_row_;
     std::string third_row_;
     std::string four_row_;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_first_;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_second_;
 };
 
 int main(int argc, char **argv)

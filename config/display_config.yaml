@@ -1,0 +1,4 @@
+oled_display_node:
+  ros__parameters:
+    topic_first: "custom_topic/first"
+    topic_second: "custom_topic/second"

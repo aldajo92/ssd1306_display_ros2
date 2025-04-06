@@ -31,6 +31,18 @@ target_include_directories(oled_ssd1306 PUBLIC
 # Link dependencies to the library
 ament_target_dependencies(oled_ssd1306 rclcpp std_msgs)
 
+# Install the launch file
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+# Install the configuration file (if not already added)
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 # Install the library
 install(TARGETS oled_ssd1306
     EXPORT export_oled_ssd1306
