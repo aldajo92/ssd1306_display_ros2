@@ -6,14 +6,14 @@ import os
 def generate_launch_description():
     # Get the path to the config file in the share directory
     config_file = os.path.join(
-        get_package_share_directory('ros2_ssd1306_oled'),
+        get_package_share_directory('ssd1306_display'),
         'config',
         'display_config.yaml'
     )
 
     return LaunchDescription([
         Node(
-            package='ros2_ssd1306_oled',
+            package='ssd1306_display',
             executable='display_node',
             name='oled_display_node',
             parameters=[config_file]
